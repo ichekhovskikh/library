@@ -14,23 +14,9 @@ import com.vaadin.ui.themes.ValoTheme;
 import java.util.List;
 
 public class AuthorView extends AbstractLibraryView {
-    private Grid grid;
-    private TextField search;
-    private Button buttonEdit;
-    private Button buttonAdd;
-    private Button buttonRemove;
 
     public AuthorView() {
-        setSpacing(true);
-
-        addComponent(LibraryComponentFactory.createLibraryHeader(this));
-        Component title = LibraryComponentFactory.createLibraryTittle("Авторы");
-        addComponent(title);
-        setComponentAlignment(title, Alignment.TOP_CENTER);
-
-        initLibrarySearch();
-        initGrid();
-        initOperationButtons();
+        super("Авторы");
         refreshGrid();
     }
 
@@ -60,7 +46,8 @@ public class AuthorView extends AbstractLibraryView {
         buttonRemove.setVisible(false);
     }
 
-    private void initLibrarySearch() {
+    @Override
+    protected void initLibrarySearch() {
         Button advancedSearchButton = new Button(FontAwesome.ALIGN_JUSTIFY);
         SearchAuthorSubWindow searchAuthorSubWindow = new SearchAuthorSubWindow(this,
                 "Расширенный поиск", model, controller);
@@ -94,21 +81,8 @@ public class AuthorView extends AbstractLibraryView {
         refreshGrid(foundAuthors);
     }
 
-    private void initGrid() {
-        grid = new Grid();
-        grid.setWidth(getWidth(), getWidthUnits());
-
-        addColumnsOnGrid();
-        grid.getColumn("Id").setHidden(true);
-        grid.addItemClickListener(e -> {
-            buttonEdit.setVisible(true);
-            buttonRemove.setVisible(true);
-        });
-        addComponents(grid);
-        setComponentAlignment(grid, Alignment.TOP_CENTER);
-    }
-
-    private void addColumnsOnGrid() {
+    @Override
+    protected void addColumnsOnGrid() {
         grid.addColumn("Id", Long.class).setHeaderCaption("Идентификатор");
         grid.addColumn("Name", String.class).setHeaderCaption("Имя");
         grid.addColumn("Patronymic", String.class).setHeaderCaption("Отчество");
@@ -116,31 +90,21 @@ public class AuthorView extends AbstractLibraryView {
         grid.addColumn("BookCount", Integer.class).setHeaderCaption("Количество книг");
     }
 
-    private void initOperationButtons() {
-        initRemoveButton();
-        initAddButton();
-        initEditButton();
-
-        HorizontalLayout operationButtons = new HorizontalLayout();
-        operationButtons.setSpacing(true);
-        operationButtons.setMargin(true);
-        operationButtons.addComponents(buttonEdit, buttonAdd, buttonRemove);
-        addComponent(operationButtons);
-        setComponentAlignment(operationButtons, Alignment.TOP_RIGHT);
-    }
-
-    private void initRemoveButton() {
+    @Override
+    protected void initRemoveButton() {
         buttonRemove = LibraryComponentFactory.createButtonRemove();
         buttonRemove.addClickListener(e -> removeAuthor());
     }
 
-    private void initAddButton() {
+    @Override
+    protected void initAddButton() {
         buttonAdd = LibraryComponentFactory.createButtonAdd();
         AddAuthorSubWindow addAuthorSubWindow = new AddAuthorSubWindow(buttonAdd.getCaption(), model, controller);
         buttonAdd.addClickListener(e -> UI.getCurrent().addWindow(addAuthorSubWindow));
     }
 
-    private void initEditButton() {
+    @Override
+    protected void initEditButton() {
         buttonEdit = LibraryComponentFactory.createButtonEdit();
         EditAuthorSubWindow editBookSubWindow = new EditAuthorSubWindow(buttonEdit.getCaption(), model, controller);
         buttonEdit.addClickListener(e -> {
