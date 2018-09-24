@@ -1,8 +1,9 @@
-package com.haulmont.testtask.ui.genre;
+package com.haulmont.testtask.ui.subwindow.add;
 
 import com.haulmont.testtask.controller.LibraryController;
 import com.haulmont.testtask.entity.Genre;
 import com.haulmont.testtask.model.LibraryModel;
+import com.haulmont.testtask.ui.subwindow.AbstractGenreSubWindow;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.*;
 import org.hibernate.HibernateException;

@@ -1,17 +1,19 @@
-package com.haulmont.testtask.ui.genre;
+package com.haulmont.testtask.ui.view;
 
 import com.haulmont.testtask.entity.Genre;
 import com.haulmont.testtask.model.EventType;
 import com.haulmont.testtask.model.LibraryModel;
 import com.haulmont.testtask.ui.AbstractLibraryView;
 import com.haulmont.testtask.ui.LibraryComponentFactory;
+import com.haulmont.testtask.ui.subwindow.add.AddGenreSubWindow;
+import com.haulmont.testtask.ui.subwindow.edit.EditGenreSubWindow;
 import com.vaadin.data.Item;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.*;
 
 import java.util.List;
 
-public class GenreView extends AbstractLibraryView {
+public class GenreView extends AbstractLibraryView<Genre> {
 
     public GenreView() {
         super("Жанры");
@@ -28,10 +30,17 @@ public class GenreView extends AbstractLibraryView {
     public void enter(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
     }
 
+    @Override
+    public String getSearchText() {
+        return search.getValue();
+    }
+
+    @Override
     public void refreshGrid() {
         refreshGrid(model.getAllGenres());
     }
 
+    @Override
     public void refreshGrid(List<Genre> genres) {
         grid.getContainerDataSource().removeAllItems();
         genres.forEach(genre -> grid.addRow(genre.getId(), genre.getName(), genre.getBooks().size()));

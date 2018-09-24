@@ -1,18 +1,22 @@
-package com.haulmont.testtask.ui.book;
+package com.haulmont.testtask.ui.view;
 
 import com.haulmont.testtask.entity.*;
 import com.haulmont.testtask.model.*;
 import com.haulmont.testtask.ui.AbstractLibraryView;
 import com.haulmont.testtask.ui.LibraryComponentFactory;
+import com.haulmont.testtask.ui.panel.BookFilterPanel;
+import com.haulmont.testtask.ui.panel.FilterPanel;
+import com.haulmont.testtask.ui.subwindow.add.AddBookSubWindow;
+import com.haulmont.testtask.ui.subwindow.edit.EditBookSubWindow;
+import com.haulmont.testtask.ui.subwindow.search.SearchBookSubWindow;
 import com.vaadin.data.Item;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.*;
-import com.vaadin.ui.themes.ValoTheme;
 
 import java.util.List;
 
-public class BookView extends AbstractLibraryView {
+public class BookView extends AbstractLibraryView<Book> {
 
     public BookView() {
         super("Книги");
@@ -29,14 +33,17 @@ public class BookView extends AbstractLibraryView {
     public void enter(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
     }
 
+    @Override
     public String getSearchText() {
         return search.getValue();
     }
 
+    @Override
     public void refreshGrid() {
         refreshGrid(model.getAllBooks());
     }
 
+    @Override
     public void refreshGrid(List<Book> books) {
         grid.getContainerDataSource().removeAllItems();
         books.forEach(book -> grid.addRow(book.getId(), book.getName(), book.getAuthor(),
@@ -47,29 +54,23 @@ public class BookView extends AbstractLibraryView {
 
     @Override
     protected void initLibrarySearch() {
+        FilterPanel<Book> filterPanel = new BookFilterPanel(this, model);
+        SearchBookSubWindow searchBookSubWindow = new SearchBookSubWindow("Расширенный поиск",  model, filterPanel);
+
         Button advancedSearchButton = new Button(FontAwesome.ALIGN_JUSTIFY);
-        SearchBookSubWindow searchBookSubWindow = new SearchBookSubWindow(this,
-                "Расширенный поиск", model, controller);
-        advancedSearchButton.addClickListener(e -> UI.getCurrent().addWindow(searchBookSubWindow));
-
-        initSearchField(searchBookSubWindow);
-
-        CssLayout filter = new CssLayout();
-        filter.addStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
-        filter.addComponents(search, advancedSearchButton);
-        addComponent(filter);
-        setComponentAlignment(filter, Alignment.TOP_CENTER);
-
-        Component labelFilters = searchBookSubWindow.getFilterContainer();
-        addComponent(labelFilters);
-        setComponentAlignment(labelFilters, Alignment.TOP_CENTER);
+        advancedSearchButton.addClickListener(e -> {
+            searchBookSubWindow.setInitialValues(filterPanel.getFilter());
+            UI.getCurrent().addWindow(searchBookSubWindow);
+        });
+        initSearchField(filterPanel);
+        addSearchPanelOnView(advancedSearchButton, filterPanel.getFilterContainer());
     }
 
-    private void initSearchField(SearchBookSubWindow searchBookSubWindow) {
+    private void initSearchField(FilterPanel<Book> filterPanel) {
         search = new TextField();
         search.setInputPrompt("Поиск по названию...");
         search.addTextChangeListener(e ->  {
-            Book bookFilter = searchBookSubWindow.getBookFilter();
+            Book bookFilter = filterPanel.getFilter();
             bookFilter.setName(e.getText());
             findBook(bookFilter);
         });

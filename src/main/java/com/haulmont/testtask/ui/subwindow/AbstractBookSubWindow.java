@@ -1,13 +1,14 @@
-package com.haulmont.testtask.ui.book;
+package com.haulmont.testtask.ui.subwindow;
 
 import com.haulmont.testtask.controller.LibraryController;
-import com.haulmont.testtask.entity.*;
+import com.haulmont.testtask.entity.Author;
+import com.haulmont.testtask.entity.Book;
+import com.haulmont.testtask.entity.Genre;
+import com.haulmont.testtask.entity.Publisher;
 import com.haulmont.testtask.model.LibraryModel;
 import com.vaadin.data.Validator;
 import com.vaadin.event.FieldEvents;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.Window;
+import com.vaadin.ui.*;
 
 public abstract class AbstractBookSubWindow extends Window {
     protected TextField name;

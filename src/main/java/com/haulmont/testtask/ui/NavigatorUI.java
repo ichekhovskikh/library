@@ -1,8 +1,8 @@
 package com.haulmont.testtask.ui;
 
-import com.haulmont.testtask.ui.author.AuthorView;
-import com.haulmont.testtask.ui.book.BookView;
-import com.haulmont.testtask.ui.genre.GenreView;
+import com.haulmont.testtask.ui.view.AuthorView;
+import com.haulmont.testtask.ui.view.BookView;
+import com.haulmont.testtask.ui.view.GenreView;
 import com.vaadin.annotations.Theme;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.VaadinRequest;

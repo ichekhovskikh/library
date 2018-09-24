@@ -1,19 +1,23 @@
-package com.haulmont.testtask.ui.author;
+package com.haulmont.testtask.ui.view;
 
 import com.haulmont.testtask.entity.Author;
 import com.haulmont.testtask.model.EventType;
 import com.haulmont.testtask.model.LibraryModel;
 import com.haulmont.testtask.ui.AbstractLibraryView;
 import com.haulmont.testtask.ui.LibraryComponentFactory;
+import com.haulmont.testtask.ui.panel.AuthorFilterPanel;
+import com.haulmont.testtask.ui.panel.FilterPanel;
+import com.haulmont.testtask.ui.subwindow.add.AddAuthorSubWindow;
+import com.haulmont.testtask.ui.subwindow.edit.EditAuthorSubWindow;
+import com.haulmont.testtask.ui.subwindow.search.SearchAuthorSubWindow;
 import com.vaadin.data.Item;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.*;
-import com.vaadin.ui.themes.ValoTheme;
 
 import java.util.List;
 
-public class AuthorView extends AbstractLibraryView {
+public class AuthorView extends AbstractLibraryView<Author> {
 
     public AuthorView() {
         super("Авторы");
@@ -30,14 +34,17 @@ public class AuthorView extends AbstractLibraryView {
     public void enter(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
     }
 
+    @Override
     public String getSearchText() {
         return search.getValue();
     }
 
+    @Override
     public void refreshGrid() {
         refreshGrid(model.getAllAuthors());
     }
 
+    @Override
     public void refreshGrid(List<Author> authors) {
         grid.getContainerDataSource().removeAllItems();
         authors.forEach(author -> grid.addRow(author.getId(), author.getName(),
@@ -48,29 +55,23 @@ public class AuthorView extends AbstractLibraryView {
 
     @Override
     protected void initLibrarySearch() {
+        FilterPanel<Author> filterPanel = new AuthorFilterPanel(this, model);
+        SearchAuthorSubWindow searchAuthorSubWindow = new SearchAuthorSubWindow("Расширенный поиск", model, filterPanel);
+
         Button advancedSearchButton = new Button(FontAwesome.ALIGN_JUSTIFY);
-        SearchAuthorSubWindow searchAuthorSubWindow = new SearchAuthorSubWindow(this,
-                "Расширенный поиск", model, controller);
-        advancedSearchButton.addClickListener(e -> UI.getCurrent().addWindow(searchAuthorSubWindow));
-
-        initSearchField(searchAuthorSubWindow);
-
-        CssLayout filter = new CssLayout();
-        filter.addStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
-        filter.addComponents(search, advancedSearchButton);
-        addComponent(filter);
-        setComponentAlignment(filter, Alignment.TOP_CENTER);
-
-        Component labelFilters = searchAuthorSubWindow.getFilterContainer();
-        addComponent(labelFilters);
-        setComponentAlignment(labelFilters, Alignment.TOP_CENTER);
+        advancedSearchButton.addClickListener(e -> {
+            searchAuthorSubWindow.setInitialValues(filterPanel.getFilter());
+            UI.getCurrent().addWindow(searchAuthorSubWindow);
+        });
+        initSearchField(filterPanel);
+        addSearchPanelOnView(advancedSearchButton, filterPanel.getFilterContainer());
     }
 
-    private void initSearchField(SearchAuthorSubWindow searchAuthorSubWindow) {
+    private void initSearchField(FilterPanel<Author> filterPanel) {
         search = new TextField();
         search.setInputPrompt("Поиск по имени...");
         search.addTextChangeListener(e ->  {
-            Author authorFilter = searchAuthorSubWindow.getAuthorFilter();
+            Author authorFilter = filterPanel.getFilter();
             authorFilter.setName(e.getText());
             findAuthor(authorFilter);
         });

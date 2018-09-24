@@ -7,8 +7,11 @@ import com.haulmont.testtask.module.*;
 import com.haulmont.testtask.controller.LibraryController;
 import com.vaadin.navigator.View;
 import com.vaadin.ui.*;
+import com.vaadin.ui.themes.ValoTheme;
 
-public abstract class AbstractLibraryView extends VerticalLayout implements ModelListener, View {
+import java.util.List;
+
+public abstract class AbstractLibraryView<T> extends VerticalLayout implements ModelListener, View {
     protected LibraryModel model;
     protected LibraryController controller;
 
@@ -35,6 +38,12 @@ public abstract class AbstractLibraryView extends VerticalLayout implements Mode
         initGrid();
         initOperationButtons();
     }
+
+    public abstract String getSearchText();
+
+    public abstract void refreshGrid();
+
+    public abstract void refreshGrid(List<T> books);
 
     protected abstract void initLibrarySearch();
 
@@ -65,6 +74,18 @@ public abstract class AbstractLibraryView extends VerticalLayout implements Mode
         operationButtons.addComponents(buttonEdit, buttonAdd, buttonRemove);
         addComponent(operationButtons);
         setComponentAlignment(operationButtons, Alignment.TOP_RIGHT);
+    }
+
+    protected void addSearchPanelOnView(Button advancedSearchButton, Component labelFilters) {
+        CssLayout filter = new CssLayout();
+        filter.addStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
+        filter.addComponents(search, advancedSearchButton);
+
+        addComponent(filter);
+        addComponent(labelFilters);
+
+        setComponentAlignment(filter, Alignment.TOP_CENTER);
+        setComponentAlignment(labelFilters, Alignment.TOP_CENTER);
     }
 
     protected abstract void initEditButton();

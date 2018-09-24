@@ -1,15 +1,17 @@
-package com.haulmont.testtask.ui.author;
+package com.haulmont.testtask.ui.subwindow.edit;
 
 import com.haulmont.testtask.controller.LibraryController;
 import com.haulmont.testtask.entity.Author;
 import com.haulmont.testtask.model.LibraryModel;
+import com.haulmont.testtask.ui.subwindow.AbstractAuthorSubWindow;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.*;
 import org.hibernate.HibernateException;
 
-public class AddAuthorSubWindow extends AbstractAuthorSubWindow {
+public class EditAuthorSubWindow extends AbstractAuthorSubWindow {
+    private long authorId;
 
-    public AddAuthorSubWindow(String text, LibraryModel model, LibraryController controller) {
+    public EditAuthorSubWindow(String text, LibraryModel model, LibraryController controller) {
         super(text, model, controller);
     }
 
@@ -19,20 +21,17 @@ public class AddAuthorSubWindow extends AbstractAuthorSubWindow {
         form.addStyleName("light");
 
         name = new TextField("Имя");
-        name.setRequired(true);
         form.addComponent(name);
 
         patronymic = new TextField("Отчество");
-        patronymic.setRequired(true);
         form.addComponent(patronymic);
 
         username = new TextField("Фамилия");
-        username.setRequired(true);
         form.addComponent(username);
 
         Button ok = new Button("OK", FontAwesome.CHECK);
         ok.addStyleName("primary");
-        ok.addClickListener(e -> addAuthor());
+        ok.addClickListener(e -> editAuthor());
 
         VerticalLayout mainLayout = new VerticalLayout();
         mainLayout.setMargin(true);
@@ -41,18 +40,29 @@ public class AddAuthorSubWindow extends AbstractAuthorSubWindow {
         setContent(mainLayout);
     }
 
-    private void addAuthor() {
+    public void setSelectedAuthorId(long authorId) {
+        this.authorId = authorId;
+        Author author = model.getAuthor(authorId);
+
+        name.setValue(author.getName());
+        username.setValue(author.getUsername());
+        patronymic.setValue(author.getPatronymic());
+    }
+
+    private void editAuthor() {
+        if (authorId == 0)
+            throw new IllegalArgumentException("Author id is not set");
         if (hasInvalidFields()) {
             Notification.show("Заполните все поля!");
             return;
         }
 
-        Author author = new Author();
+        Author author = model.getAuthor(authorId);
         fillInformationAboutAuthor(author);
         try {
-            controller.add(author);
-            Notification.show("Добавлено");
-            clearWindow();
+            controller.update(author);
+            Notification.show("Обновлено");
+            authorId = 0;
             close();
         } catch (HibernateException ex) {
             Notification.show(ex.getMessage());

@@ -1,16 +1,16 @@
-package com.haulmont.testtask.ui.genre;
+package com.haulmont.testtask.ui.subwindow.add;
 
 import com.haulmont.testtask.controller.LibraryController;
-import com.haulmont.testtask.entity.Genre;
+import com.haulmont.testtask.entity.Author;
 import com.haulmont.testtask.model.LibraryModel;
+import com.haulmont.testtask.ui.subwindow.AbstractAuthorSubWindow;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.*;
 import org.hibernate.HibernateException;
 
-public class EditGenreSubWindow extends AbstractGenreSubWindow {
-    private long genreId;
+public class AddAuthorSubWindow extends AbstractAuthorSubWindow {
 
-    public EditGenreSubWindow(String text, LibraryModel model, LibraryController controller) {
+    public AddAuthorSubWindow(String text, LibraryModel model, LibraryController controller) {
         super(text, model, controller);
     }
 
@@ -19,12 +19,21 @@ public class EditGenreSubWindow extends AbstractGenreSubWindow {
         form.setWidth("350");
         form.addStyleName("light");
 
-        name = new TextField("Название");
+        name = new TextField("Имя");
+        name.setRequired(true);
         form.addComponent(name);
+
+        patronymic = new TextField("Отчество");
+        patronymic.setRequired(true);
+        form.addComponent(patronymic);
+
+        username = new TextField("Фамилия");
+        username.setRequired(true);
+        form.addComponent(username);
 
         Button ok = new Button("OK", FontAwesome.CHECK);
         ok.addStyleName("primary");
-        ok.addClickListener(e -> editGenre());
+        ok.addClickListener(e -> addAuthor());
 
         VerticalLayout mainLayout = new VerticalLayout();
         mainLayout.setMargin(true);
@@ -33,26 +42,18 @@ public class EditGenreSubWindow extends AbstractGenreSubWindow {
         setContent(mainLayout);
     }
 
-    public void setSelectedGenreId(long genreId) {
-        this.genreId = genreId;
-        Genre genre = model.getGenre(genreId);
-        name.setValue(genre.getName());
-    }
-
-    private void editGenre() {
-        if (genreId == 0)
-            throw new IllegalArgumentException("Genre id is not set");
+    private void addAuthor() {
         if (hasInvalidFields()) {
             Notification.show("Заполните все поля!");
             return;
         }
 
-        Genre genre = model.getGenre(genreId);
-        fillInformationAboutGenre(genre);
+        Author author = new Author();
+        fillInformationAboutAuthor(author);
         try {
-            controller.update(genre);
-            Notification.show("Обновлено");
-            genreId = 0;
+            controller.add(author);
+            Notification.show("Добавлено");
+            clearWindow();
             close();
         } catch (HibernateException ex) {
             Notification.show(ex.getMessage());

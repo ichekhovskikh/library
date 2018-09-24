@@ -25,7 +25,7 @@
         <init-param>
             <description>Vaadin UI to display</description>
             <param-name>UI</param-name>
-            <param-value>com.haulmont.testtask.ui.genre.GenreView</param-value>
+            <param-value>com.haulmont.testtask.ui.view.GenreView</param-value>
         </init-param>
     </servlet>
     <servlet>
@@ -34,7 +34,7 @@
         <init-param>
             <description>Vaadin UI to display</description>
             <param-name>UI</param-name>
-            <param-value>com.haulmont.testtask.ui.author.AuthorView</param-value>
+            <param-value>com.haulmont.testtask.ui.view.AuthorView</param-value>
         </init-param>
     </servlet>
     <servlet>
@@ -43,7 +43,7 @@
         <init-param>
             <description>Vaadin UI to display</description>
             <param-name>UI</param-name>
-            <param-value>com.haulmont.testtask.ui.book.BookView</param-value>
+            <param-value>com.haulmont.testtask.ui.view.BookView</param-value>
         </init-param>
     </servlet>
 
